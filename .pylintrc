@@ -2,4 +2,5 @@
 load-plugins=pylint_django
 
 [MESSAGES CONTROL]
-disable=signature-differs
+disable=signature-differs,
+        bad-continuation

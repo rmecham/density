@@ -139,3 +139,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = "/static/"
+
+OCCUPANCY_SETTLED_THRESHOLD = 5 * 60  # Five minutes

@@ -85,8 +85,15 @@ class SpaceOccupancy(AbstractBaseModel):
         SETTLED = "SETTLED", "Settled"
 
     space = models.ForeignKey(Space, on_delete=models.PROTECT)
-    timestamp = models.DateTimeField()
+    dpu_event = models.ForeignKey(DPUEvent, on_delete=models.PROTECT)
     status = models.CharField(
         max_length=30, choices=RecordStatus.choices, default=RecordStatus.PENDING
     )
-    occupancy = models.IntegerField(help_text="The total occupancy of this space ")
+    occupancy = models.IntegerField(
+        blank=True,
+        null=True,
+        help_text="The total occupancy of this space as of this record’s timestamp.",
+    )
+
+    class Meta:
+        ordering = ["-dpu_event__timestamp"]
