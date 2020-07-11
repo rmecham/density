@@ -1,11 +1,10 @@
 """
 A management command to import the sample DPU data from a CSV file.
 """
-import datetime
 from csv import DictReader
 
 from dateutil.parser import isoparse
-from django.core.management import BaseCommand, CommandError
+from django.core.management import BaseCommand
 from django.db import transaction
 from django.utils.decorators import method_decorator
 
@@ -42,9 +41,6 @@ class Command(BaseCommand):
         for row in reader:
             record_dpu_event(
                 dpu_id=int(row["dpu_id"]),
-                # timestamp=datetime.datetime.strptime(
-                #     row["timestamp"], "%Y-%m-%dT%H:%M:%S.%f%Z"
-                # ),
                 timestamp=isoparse(row["timestamp"]),
                 direction=int(row["direction"]),
             )

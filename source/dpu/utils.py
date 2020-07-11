@@ -29,11 +29,6 @@ def record_dpu_event(dpu_id, timestamp, direction):
         dpu_event__timestamp__lt=timestamp
         - datetime.timedelta(seconds=settings.OCCUPANCY_SETTLED_THRESHOLD),
     ).update(status=SpaceOccupancy.RecordStatus.SETTLED)
-    print(timestamp)
-    if str(timestamp) == "2018-02-26 16:06:02.903000+00:00":
-        import pdb
-
-        pdb.set_trace()
     # Finally, compute occupancies for all PENDING SpaceOccupancy records.
     if dpu.entry_space:
         calculate_occupancy(space=dpu.entry_space)

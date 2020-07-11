@@ -6,7 +6,7 @@ from utils.db.models import AbstractBaseModel
 class Space(AbstractBaseModel):
     """A representation of a space whose occupancy we are monitoring."""
 
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
@@ -15,7 +15,7 @@ class Space(AbstractBaseModel):
 class Doorway(AbstractBaseModel):
     """A representation of doorways into or out of a space, where a DPU may be located."""
 
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
@@ -59,9 +59,9 @@ class DPUEvent(AbstractBaseModel):
     """A record of a DPU observing an entry or an exit."""
 
     dpu = models.ForeignKey(DPU, on_delete=models.PROTECT)
-    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(db_index=True)
     direction = models.SmallIntegerField(
-        help_text="1 designates and entry; -1 designates an exit."
+        help_text="1 designates an entry; -1 designates an exit."
     )
 
     class Meta:
