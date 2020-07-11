@@ -16,6 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from dpu.views import OccupancyView
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("occupancy/<str:name>/", OccupancyView.as_view()),
+    path("occupancy/<str:name>/<str:timestamp>/", OccupancyView.as_view()),
+    path("admin/", admin.site.urls),
 ]
