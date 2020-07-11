@@ -52,7 +52,7 @@ class DPU(AbstractBaseModel):
     )
 
     def __str__(self):
-        return self.dpu_id
+        return f"{self.dpu_id}"
 
 
 class DPUEvent(AbstractBaseModel):
@@ -66,6 +66,9 @@ class DPUEvent(AbstractBaseModel):
 
     class Meta:
         ordering = ["-timestamp"]
+
+    def __str__(self):
+        return f"{self.dpu} {self.timestamp} {self.direction}"
 
 
 class SpaceOccupancy(AbstractBaseModel):
@@ -90,8 +93,7 @@ class SpaceOccupancy(AbstractBaseModel):
         max_length=30, choices=RecordStatus.choices, default=RecordStatus.PENDING
     )
     occupancy = models.IntegerField(
-        blank=True,
-        null=True,
+        default=0,
         help_text="The total occupancy of this space as of this record’s timestamp.",
     )
 

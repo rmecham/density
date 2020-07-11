@@ -26,14 +26,19 @@ def record_dpu_event(dpu_id, timestamp, direction):
     # comparison to now, rather than the current timestamp.
     SpaceOccupancy.objects.filter(
         status=SpaceOccupancy.RecordStatus.PENDING,
-        timestamp__lt=timestamp
+        dpu_event__timestamp__lt=timestamp
         - datetime.timedelta(seconds=settings.OCCUPANCY_SETTLED_THRESHOLD),
     ).update(status=SpaceOccupancy.RecordStatus.SETTLED)
+    print(timestamp)
+    if str(timestamp) == "2018-02-26 16:06:02.903000+00:00":
+        import pdb
+
+        pdb.set_trace()
     # Finally, compute occupancies for all PENDING SpaceOccupancy records.
     if dpu.entry_space:
         calculate_occupancy(space=dpu.entry_space)
     if dpu.exit_space:
-        calculate_occupancy(space=dpu.entry_space)
+        calculate_occupancy(space=dpu.exit_space)
 
 
 def calculate_occupancy(space):
@@ -53,11 +58,15 @@ def calculate_occupancy(space):
         .first()
     )
     # `occupancy` is our running balance.
-    occupancy = most_recent_settled.occupancy
+    try:
+        occupancy = most_recent_settled.occupancy
+    except AttributeError:
+        # No existing SpaceOccupancy objects so start from 0.
+        occupancy = 0
     for space_occupancy in (
         SpaceOccupancy.objects.select_related("dpu_event", "dpu_event__dpu")
         .filter(space=space, status=SpaceOccupancy.RecordStatus.PENDING)
-        .order_by("-dpu_event__timestamp")
+        .order_by("dpu_event__timestamp")
     ):
         # If our space is an “exit” space for the given DPU, we need to inverse the
         # direction.
@@ -65,5 +74,5 @@ def calculate_occupancy(space):
         if space.pk == space_occupancy.dpu_event.dpu.exit_space_id:
             direction = -direction
         occupancy += direction
-        space_occupancy = occupancy
+        space_occupancy.occupancy = occupancy
         space_occupancy.save()
